@@ -24,3 +24,12 @@ library
   build-depends:
     base,
     parsec
+
+executable test
+  default-language: Haskell2010
+  other-extensions: FlexibleContexts
+  hs-source-dirs: src
+  main-is: Address/_Test.hs
+  build-depends:
+    base,
+    parsec
