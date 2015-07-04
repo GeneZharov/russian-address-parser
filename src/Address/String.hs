@@ -26,79 +26,78 @@ import qualified Address.Number as N
 
 constant :: Parsec String Bool Component
 constant = do -- статичные легко узнаваемые компоненты
-    watch "symbol constant"
-    strings "мо"
-        *> lookAhead sep
-        *> return (Область "Московская")
+   watch "symbol constant"
+   strings "мо"
+      *> lookAhead sep
+      *> return (Область "Московская")
 
 
 -- Компонента по умолчанию, без ключа
 standalone :: Parsec String Bool Component
 standalone = do
-    watch "symbol standalone"
-    v <- value <* lookAhead sep
-               <* modifyState (const True)
-    let v' = toLower `map` v
-    return $ if v' `Set.member` russianCities
-             then Город v'
-             else Улица v'
+   watch "symbol standalone"
+   v <- value <* lookAhead sep
+   let v' = toLower `map` v
+   if v' `Set.member` russianCities
+   then return (Город v')
+   else return (Улица v') <* modifyState (const True)
 
 
 prefix :: Parsec String Bool Component
 prefix = do
-    watch "symbol prefix"
-    choice $ flip map keys $ \ (constr, key) ->
-        let fullKey  = fst key *> skipMany1 space
-            shortKey = snd key *> (char '.' *> skipMany space
-                               <|> skipMany1 space)
-        in do
-            watch $ "symbol test " ++ show (constr "")
-            result <- (try fullKey <|> try shortKey)
-                   *> (constr . map toLower) `fmap` value
-                   <* lookAhead sep
-            when (isRoad result) (modifyState $ const True)
-            return result
+   watch "symbol prefix"
+   choice $ flip map keys $ \ (constr, key) ->
+      let fullKey  = fst key *> skipMany1 space
+          shortKey = snd key *> (char '.' *> skipMany space
+                             <|> skipMany1 space)
+      in do
+          watch $ "symbol test " ++ show (constr "")
+          result <- (try fullKey <|> try shortKey)
+                 *> (constr . map toLower) `fmap` value
+                 <* lookAhead sep
+          when (isRoad result) (modifyState $ const True)
+          return result
 
 
 postfix :: Parsec String Bool Component
 postfix = do
-    watch "symbol postfix"
-    value <- value <* skipMany1 space
-    choice $ flip map keys $ \ (constr, key) ->
-        let fullKey  = fst key <* lookAhead sep
-            shortKey = snd key <* (char '.' <|> lookAhead sep)
-        in do
-            watch $ "symbol test " ++ show (constr "")
-            try fullKey <|> try shortKey
-            let result = constr (toLower `map` value)
-            when (isRoad result) (modifyState $ const True)
-            return result
+   watch "symbol postfix"
+   value <- value <* skipMany1 space
+   choice $ flip map keys $ \ (constr, key) ->
+      let fullKey  = fst key <* lookAhead sep
+          shortKey = snd key <* (char '.' <|> lookAhead sep)
+      in do
+          watch $ "symbol test " ++ show (constr "")
+          try fullKey <|> try shortKey
+          let result = constr (toLower `map` value)
+          when (isRoad result) (modifyState $ const True)
+          return result
 
 
 sep :: Parsec String Bool Char
 sep = space
   <|> char ','
-  <|> char '.' -- Бывают адреса с точкой-разделителем
+  <|> char '.' -- бывают адреса с точкой-разделителем
   <|> eof *> return 'x'
 
 
 value :: Parsec String Bool String
 value = do
-    watch "value"
-    manyTill1 (alphaNum <|> oneOf " -.") $ lookAhead $
-            try (many  space <* eof)
-        <|> try (many  space <* char ',')
-        <|> try (many1 space <* choice (symbolKey `map` keys))
-        <|> try (many  space <* (try N.prefix <|> try N.postfix))
-    where symbolKey (constr, key) = do
-              watch $ "symbolKey " ++ show (constr "")
-              try (fst key <* sep) <|> try (snd key <* (sep <|> char '.'))
-          sep = space
-            <|> char ','
-            <|> eof *> return 'x'
+   watch "value"
+   manyTill1 (alphaNum <|> oneOf " -.") $ lookAhead $
+          try (many  space <* eof)
+      <|> try (many  space <* char ',')
+      <|> try (many1 space <* choice (symbolKey `map` keys))
+      <|> try (many  space <* (try N.prefix <|> try N.postfix))
+   where symbolKey (constr, key) = do
+            watch $ "symbolKey " ++ show (constr "")
+            try (fst key <* sep) <|> try (snd key <* (sep <|> char '.'))
+         sep = space
+           <|> char ','
+           <|> eof *> return 'x'
 
 
-keys = let null = many1 (satisfy (const False))
+keys = let null = many1 $ satisfy (const False)
        in [
 
             -- Несмотря на то, что по правилам русского языка после слов, 
@@ -106,84 +105,100 @@ keys = let null = many1 (satisfy (const False))
             -- которые её ставят, поэтому располагаю такие ключи во второй 
             -- группе.
 
-            ( Область, (
-                strings "область",
-                strings "обл"
-            ) ),
+            ( Область
+            , ( strings "область"
+              , strings "обл"
+              )
+            )
 
-            ( Город, (
-                strings "город",
-                try (strings "гор") <|> strings "г"
-            ) ),
+          , ( Город
+            , ( strings "город"
+              , try (strings "гор") <|> strings "г"
+              )
+            )
 
-            ( Посёлок, (
-                strings "пос" *> oneOf "ёе" *> strings "лок",
-                try (strings "пос") <|> strings "п"
-            ) ),
+          , ( Посёлок
+            , ( strings "пос" *> oneOf "ёе" *> strings "лок"
+              , try (strings "пос") <|> strings "п"
+              )
+            )
 
-            ( Село, (
-                strings "село",
-                strings "с" -- сокращение 'с' конфликтует со строением
-            ) ),
+          , ( Село
+            , ( strings "село"
+              , strings "с" -- сокращение 'с' конфликтует со строением
+              )
+            )
 
-            ( Деревня, (
-                strings "деревня",
-                null
-            ) ),
+          , ( Деревня
+            , ( strings "деревня"
+              , null
+              )
+            )
 
-            ( Район, (
-                strings "район",
-                strings "р-н"
-            ) ),
+          , ( Район
+            , ( strings "район"
+              , strings "р-н"
+              )
+            )
 
-            ( Микрорайон, (
-                strings "микрорайон",
-                try (strings "мкрн") <|> strings "мкр"
-            ) ),
+          , ( Микрорайон
+            , ( strings "микрорайон"
+              , try (strings "мкрн") <|> strings "мкр"
+              )
+            )
 
-            ( Улица, (
-                strings "улица",
-                strings "ул"
-            ) ),
+          , ( Улица
+            , ( strings "улица"
+              , strings "ул"
+              )
+            )
 
-            ( Шоссе, (
-                strings "шоссе",
-                strings "ш"
-            ) ),
+          , ( Шоссе
+            , ( strings "шоссе"
+              , strings "ш"
+              )
+            )
 
-            ( Переулок, (
-                strings "переулок",
-                strings "пер"
-            ) ),
+          , ( Переулок
+            , ( strings "переулок"
+              , strings "пер"
+              )
+            )
 
-            ( Бульвар, (
-                strings "бульвар",
-                strings "б-р"
-            ) ),
+          , ( Бульвар
+            , ( strings "бульвар"
+              , strings "б-р"
+              )
+            )
 
-            ( Проспект, (
-                strings "проспект",
-                try (strings "пр-т") <|> strings "пр"
-            ) ),
+          , ( Проспект
+            , ( strings "проспект"
+              , try (strings "пр-т") <|> strings "пр"
+              )
+            )
 
-            ( Набережная, (
-                strings "набережная",
-                strings "наб"
-            ) ),
+          , ( Набережная
+            , ( strings "набережная"
+              , strings "наб"
+              )
+            )
 
-            ( Проезд, (
-                strings "проезд",
-                strings "пр-д"
-            ) ),
+          , ( Проезд
+            , ( strings "проезд"
+              , strings "пр-д"
+              )
+            )
 
-            ( Спуск, (
-                strings "спуск",
-                null
-            ) ),
+          , ( Спуск
+            , ( strings "спуск"
+              , null
+              )
+            )
 
-            ( Тупик, (
-                strings "тупик",
-                null
-            ) )
+          , ( Тупик
+            , ( strings "тупик"
+              , null
+              )
+            )
 
         ]

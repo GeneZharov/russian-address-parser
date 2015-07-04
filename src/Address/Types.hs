@@ -9,39 +9,39 @@ module Address.Types
 
 data Component =
 
-    Область String
+   Область String
 
-    -- Settlement
-    | Город String
-    | Посёлок String
-    | Село String
-    | Деревня String
+   -- Settlement
+   | Город String
+   | Посёлок String
+   | Село String
+   | Деревня String
 
-    -- District
-    | Район String
-    | Микрорайон String
+   -- District
+   | Район String
+   | Микрорайон String
 
-    -- Road
-    | Улица String
-    | Шоссе String
-    | Переулок String
-    | Бульвар String
-    | Проспект String
-    | Набережная String
-    | Проезд String
-    | Спуск String
-    | Тупик String
+   -- Road
+   | Улица String
+   | Шоссе String
+   | Переулок String
+   | Бульвар String
+   | Проспект String
+   | Набережная String
+   | Проезд String
+   | Спуск String
+   | Тупик String
 
-    -- Char
-    | Литера Char
+   -- Char
+   | Литера Char
 
-    -- Digital
-    | Дом HouseNum
-    | Корпус HouseNum
-    | Строение HouseNum
-    | Владение HouseNum
+   -- Digital
+   | Дом HouseNum
+   | Корпус HouseNum
+   | Строение HouseNum
+   | Владение HouseNum
 
-    deriving (Show, Eq, Ord)
+   deriving (Show, Eq, Ord)
 
 
 -- Числовое значение компоненты

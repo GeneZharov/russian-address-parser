@@ -39,6 +39,6 @@ manyTill1 p end = liftM2 (:) p (manyTill p end)
 debug = False
 watch comment | not debug = return ()
 watch comment | debug =
-    getInput >>=
-    \rest -> trace (format rest) (return ())
-    where format rest = '"':rest ++ "\"; " ++ comment
+   getInput >>=
+   \rest -> trace (format rest) (return ())
+   where format rest = '"':rest ++ "\"; " ++ comment
