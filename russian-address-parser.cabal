@@ -17,8 +17,9 @@ library
       Address.Main
     , Address.Types
     , Address.Char
-    , Address.Digit
-    , Address.Symbol
+    , Address.Number
+    , Address.String
+    , Address.Cities
     , Address.Utils
   hs-source-dirs: src
   build-depends:

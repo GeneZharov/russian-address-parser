@@ -13,7 +13,6 @@ module Address.Number (standalone, prefix, postfix) where
 
 import Text.Parsec
 import Control.Applicative hiding (optional, (<|>))
-import Data.Char (toLower)
 import Control.Monad (when)
 
 import Address.Utils
@@ -91,7 +90,7 @@ part = do
    Part
       <$> (read :: String -> Int) `fmap` many1 digit
       <*> option Nothing
-              (try $ optional (char '-') *> (Just . toLower) `fmap` letter)
+              (try $ optional (char '-') *> Just `fmap` letter)
 
 
 keys = [

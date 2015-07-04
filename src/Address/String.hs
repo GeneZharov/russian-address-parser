@@ -39,8 +39,8 @@ standalone = do
    v <- value <* lookAhead sep
    let v' = toLower `map` v
    if v' `Set.member` russianCities
-   then return (Город v')
-   else return (Улица v') <* modifyState (const True)
+   then return (Город v)
+   else return (Улица v) <* modifyState (const True)
 
 
 prefix :: Parsec String Bool Component
@@ -53,7 +53,7 @@ prefix = do
       in do
           watch $ "symbol test " ++ show (constr "")
           result <- (try fullKey <|> try shortKey)
-                 *> (constr . map toLower) `fmap` value
+                 *> constr `fmap` value
                  <* lookAhead sep
           when (isRoad result) (modifyState $ const True)
           return result
@@ -69,7 +69,7 @@ postfix = do
       in do
           watch $ "symbol test " ++ show (constr "")
           try fullKey <|> try shortKey
-          let result = constr (toLower `map` value)
+          let result = constr value
           when (isRoad result) (modifyState $ const True)
           return result
 

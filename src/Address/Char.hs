@@ -7,7 +7,6 @@ module Address.Char (prefix, postfix) where
 import Text.Parsec
 import Control.Applicative hiding (optional, (<|>), many)
 import Debug.Trace (trace)
-import Data.Char (toLower)
 
 import Address.Utils
 import Address.Types
@@ -23,7 +22,7 @@ prefix = do
       in do
           watch $ "char test " ++ show (constr '?')
           (try fullKey <|> try shortKey)
-              *> fmap (constr . toLower) value
+              *> constr `fmap` value
               <* lookAhead sep
 
 
@@ -37,7 +36,7 @@ postfix = do
       in do
           watch $ "char test " ++ show (constr '?')
           try fullKey <|> try shortKey
-          return (constr $ toLower value)
+          return (constr value)
 
 
 sep :: Parsec String Bool Char
