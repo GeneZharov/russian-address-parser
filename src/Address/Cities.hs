@@ -1,7 +1,10 @@
 module Address.Cities where
 
 
-russianCities =
+import qualified Data.Set as Set
+
+
+russianCities = Set.fromList
 
    [ "мск"
    , "спб", "с-пб", "с.-пб", "с-петербург", "с.-петербург", "питер"

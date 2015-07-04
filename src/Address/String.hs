@@ -16,9 +16,11 @@ import Control.Applicative hiding (optional, (<|>), many)
 import Data.Char (toLower)
 import Control.Monad (when)
 import Debug.Trace (trace)
+import qualified Data.Set as Set
 
 import Address.Utils
 import Address.Types
+import Address.Cities
 import qualified Address.Number as N
 
 
@@ -34,9 +36,12 @@ constant = do -- статичные легко узнаваемые компон
 standalone :: Parsec String Bool Component
 standalone = do
     watch "symbol standalone"
-    fmap (Улица . map toLower) value
-        <* lookAhead sep
-        <* modifyState (const True)
+    v <- value <* lookAhead sep
+               <* modifyState (const True)
+    let v' = toLower `map` v
+    return $ if v' `Set.member` russianCities
+             then Город v'
+             else Улица v'
 
 
 prefix :: Parsec String Bool Component
@@ -49,7 +54,7 @@ prefix = do
         in do
             watch $ "symbol test " ++ show (constr "")
             result <- (try fullKey <|> try shortKey)
-                   *> fmap (constr . map toLower) value
+                   *> (constr . map toLower) `fmap` value
                    <* lookAhead sep
             when (isRoad result) (modifyState $ const True)
             return result
@@ -65,7 +70,7 @@ postfix = do
         in do
             watch $ "symbol test " ++ show (constr "")
             try fullKey <|> try shortKey
-            let result = constr (map toLower value)
+            let result = constr (toLower `map` value)
             when (isRoad result) (modifyState $ const True)
             return result
 
@@ -83,7 +88,7 @@ value = do
     manyTill1 (alphaNum <|> oneOf " -.") $ lookAhead $
             try (many  space <* eof)
         <|> try (many  space <* char ',')
-        <|> try (many1 space <* choice (map symbolKey keys))
+        <|> try (many1 space <* choice (symbolKey `map` keys))
         <|> try (many  space <* (try N.prefix <|> try N.postfix))
     where symbolKey (constr, key) = do
               watch $ "symbolKey " ++ show (constr "")

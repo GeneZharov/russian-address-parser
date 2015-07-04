@@ -67,7 +67,7 @@ main = do
     print $ parseAddr "Серебристый бульвар ул.,д.14 к.2"
     -}
     --print $ parseAddr "Мира пр-т ,д.54"
-    print $ parseAddr "10-лет Октября ул.,д.2"
+    print $ parseAddr "Владик, 10-лет Октября ул.,д.2"
 
     --putStrLn $ format $ fromRight $ parseAddr "МО, ул. 1-я Дубровская, д.99"
     --where fromRight (Right x) = x

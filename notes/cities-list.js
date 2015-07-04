@@ -9,19 +9,18 @@ function citiesList() {
 
     var cells;
     cells = document.querySelectorAll(
-        '#mw-content-text table td:nth-child(2) > *'
-    );
+                '#mw-content-text table td:nth-child(2) > *' );
     cells = Array.prototype.slice.call( cells, 0 ); // To real array
 
     var cities = cells
         .map( function (cell) {
-            return cell.innerHTML.toLowerCase();
+            return cell.textContent.toLowerCase();
         } )
-        //.sort();
+        .sort();
 
     var result = cities
         .map( function (city) { return '"' + city + '"'; } )
-        .join(', ');
+        .join(',<br>');
 
     document.body.innerHTML = result;
 

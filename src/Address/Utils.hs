@@ -22,7 +22,7 @@ chars c = char (toLower c) <|> char (toUpper c)
 
 -- Регистронезависимый парсер строки
 --strings :: Stream s m Char => String -> ParsecT s u m String
-strings s = try (mapM chars s) <?> "\"" ++ s ++ "\""
+strings s = try (chars `mapM` s) <?> "\"" ++ s ++ "\""
 
 
 manyTill1 :: GenParser tok st a

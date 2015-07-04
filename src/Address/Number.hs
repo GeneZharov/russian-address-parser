@@ -26,7 +26,7 @@ standalone = do
     watch "digit standalone"
     roadParsed <- getState
     if roadParsed
-    then fmap Дом number <* lookAhead sep
+    then Дом `fmap` number <* lookAhead sep
     else fail "Ещё не была распарсена дорога"
 
 
@@ -40,7 +40,7 @@ prefix = do
         in do
             watch $ "digit test " ++ show (emptyNum constr)
             (try fullKey <|> try shortKey)
-                *> fmap constr number
+                *> constr `fmap` number
                 <* lookAhead sep
 
 
@@ -78,7 +78,7 @@ number = do
     -- слэш.
     watch "number"
     optional (char '№') *> (HouseNum <$> part <*> option Nothing suffix)
-        where suffix = (char '/' <|> char '-') *> fmap Just part
+        where suffix = (char '/' <|> char '-') *> Just `fmap` part
            -- Разделитель дефисом — это костыль в здравпросвете,
            -- так как в имени файла не может быть слэша.
 
@@ -89,9 +89,9 @@ part = do
     -- Например "2-B" или "2B"
     watch "part"
     Part
-        <$> fmap (read :: String -> Int) (many1 digit)
+        <$> (read :: String -> Int) `fmap` many1 digit
         <*> option Nothing
-                (try $ optional (char '-') *> fmap (Just . toLower) letter)
+                (try $ optional (char '-') *> (Just . toLower) `fmap` letter)
 
 
 keys = [

@@ -1,6 +1,5 @@
 module Address.Types
-   (
-     Component(..)
+   ( Component(..)
    , HouseNum(..)
    , Part(..)
    , isRoad
