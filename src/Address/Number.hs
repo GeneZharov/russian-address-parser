@@ -1,4 +1,4 @@
--- Цифровые компоненты адреса
+-- Числовые компоненты адреса
 --
 -- Не распознаю:
 -- • Номер дома без ключа, например: Волгоградский проспект, 0
@@ -8,7 +8,7 @@
 --    1д — так не пишут, и это конфликтует с номером с буквой вроде 1А
 
 
-module Address.Digit (standalone, prefix, postfix) where
+module Address.Number (standalone, prefix, postfix) where
 
 
 import Text.Parsec

@@ -7,8 +7,8 @@ import Data.List (find)
 import Debug.Trace (trace)
 
 import Address.Types
-import qualified Address.Digit as D
-import qualified Address.Symbol as S
+import qualified Address.Number as N
+import qualified Address.String as S
 import qualified Address.Char as C
 
 
@@ -48,15 +48,15 @@ address = many space *> component `sepEndBy` sep <* eof
 component :: Parsec String Bool Component
 component = try S.constant
 
-        <|> try D.prefix
+        <|> try N.prefix
         <|> try S.prefix
         <|> try C.prefix -- редко используется
 
-        <|> try D.postfix
+        <|> try N.postfix
         <|> try S.postfix
         <|> try C.postfix -- редко используется
 
-        <|> try D.standalone
+        <|> try N.standalone
         <|>     S.standalone
 
         -- <|> anyChar *> component -- восстановление после ошибки в адресе

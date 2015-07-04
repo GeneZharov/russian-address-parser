@@ -3,8 +3,8 @@
 
 import Text.Parsec
 
-import qualified Address.Digit as D
-import qualified Address.Symbol as S
+import qualified Address.Number as N
+import qualified Address.String as S
 import Address.Main
 import Address.Types
 
@@ -66,7 +66,8 @@ main = do
     print $ parseAddr "Обводного канала набережная ул.,д.123 Лит А"
     print $ parseAddr "Серебристый бульвар ул.,д.14 к.2"
     -}
-    print $ parseAddr "Мира пр-т ,д.54"
+    --print $ parseAddr "Мира пр-т ,д.54"
+    print $ parseAddr "10-лет Октября ул.,д.2"
 
     --putStrLn $ format $ fromRight $ parseAddr "МО, ул. 1-я Дубровская, д.99"
     --where fromRight (Right x) = x

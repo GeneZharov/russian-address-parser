@@ -1,13 +1,14 @@
--- Символьные компоненты адреса
+-- Строчные компоненты адреса
 --
 -- Не распознаю:
--- • Смежные символьные компоненты, если их значения слиплись и не разделены 
---    запятой или ключами. Например: "г. Москва 1-я Дубровская ул". Тут 
---    программно просто невозможно различить границу между значениями 
---    компонент, если не иметь словаря городов/улиц.
+--
+-- Смежные символьные компоненты, если их значения слиплись и не разделены 
+-- запятой или ключами. Например: "г. Москва 1-я Дубровская ул". Тут программно 
+-- просто невозможно различить границу между значениями компонент, если не 
+-- иметь словаря городов/улиц.
 
 
-module Address.Symbol (constant, standalone, prefix, postfix) where
+module Address.String (constant, standalone, prefix, postfix) where
 
 
 import Text.Parsec
@@ -18,7 +19,7 @@ import Debug.Trace (trace)
 
 import Address.Utils
 import Address.Types
-import qualified Address.Digit as D
+import qualified Address.Number as N
 
 
 constant :: Parsec String Bool Component
@@ -83,7 +84,7 @@ value = do
             try (many  space <* eof)
         <|> try (many  space <* char ',')
         <|> try (many1 space <* choice (map symbolKey keys))
-        <|> try (many  space <* (try D.prefix <|> try D.postfix))
+        <|> try (many  space <* (try N.prefix <|> try N.postfix))
     where symbolKey (constr, key) = do
               watch $ "symbolKey " ++ show (constr "")
               try (fst key <* sep) <|> try (snd key <* (sep <|> char '.'))
