@@ -14,7 +14,7 @@ module Address.String (constant, standalone, prefix, postfix) where
 import Text.Parsec
 import Control.Applicative hiding (optional, (<|>), many)
 import Data.Char (toLower)
-import Control.Monad (when)
+import Control.Monad (when, liftM2)
 import Debug.Trace (trace)
 import qualified Data.Set as Set
 
@@ -84,11 +84,14 @@ sep = space
 value :: Parsec String Bool String
 value = do
    watch "value"
-   manyTill1 (alphaNum <|> oneOf " -.") $ lookAhead $
-          try (many  space <* eof)
-      <|> try (many  space <* char ',')
-      <|> try (many1 space <* choice (symbolKey `map` keys))
-      <|> try (many  space <* (try N.prefix <|> try N.postfix))
+   liftM2 (:)
+      alphaNum -- первый символ обязательно буквенно-цифровой
+      ( manyTill1 (alphaNum <|> oneOf " -.") $ lookAhead $
+               try (many  space <* eof)
+           <|> try (many  space <* char ',')
+           <|> try (many1 space <* choice (symbolKey `map` keys))
+           <|> try (many  space <* (try N.prefix <|> try N.postfix))
+      )
    where symbolKey (constr, key) = do
             watch $ "symbolKey " ++ show (constr "")
             try (fst key <* sep) <|> try (snd key <* (sep <|> char '.'))

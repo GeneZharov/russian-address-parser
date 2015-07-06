@@ -13,7 +13,6 @@ main = do
 
    -- TODO: Тут хорошо было бы сделать модульное тестирование
 
-   {-
    print $ parseAddr "строение 1-A/2"
    print $ parseAddr "стр 1-A/2"
    print $ parseAddr "стр. 1-A/2"
@@ -49,23 +48,20 @@ main = do
    print $ parseAddr "Алябьева ул., д.7/33, к.1"
 
    print $ parseAddr "МО, ул. 1-я Дубровская"
-   -}
 
    -- Без ключей
-   --print $ parseAddr "Таганская, 1"
-   --print $ parseAddr "1 Дубровская, 1"
+   print $ parseAddr "Таганская, 1"
+   print $ parseAddr "1 Дубровская, 1"
    --print $ parseAddr "1, 1, Дубровская"
 
-   --print $ parseAddr "Вернадского пр-т.,д.28 (3)"
-   --print $ parseAddr "Одинцово г .,Любы Новоселовой б-р,д.17"
+   print $ parseAddr "Одинцово г.,Любы Новоселовой б-р,д.17"
 
-   {-
    print $ parseAddr "МО, 1-я Дубровская шоссе ул, д1, лит А"
    print $ parseAddr "Волхонское шоссе ул,д.31"
    print $ parseAddr "Мытнинская ул.,д.25 Лит. А"
    print $ parseAddr "Обводного канала набережная ул.,д.123 Лит А"
    print $ parseAddr "Серебристый бульвар ул.,д.14 к.2"
-   -}
+
    --print $ parseAddr "Мира пр-т ,д.54"
    print $ parseAddr "Владик, 10-лет Октября ул.,д.2"
 
